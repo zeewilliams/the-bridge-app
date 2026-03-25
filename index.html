@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="The Bridge">
+<meta name="theme-color" content="#0d1117">
+<meta name="description" content="A free family Bible study app. Scripture interprets Scripture — no theology degree required.">
+<title>The Bridge — Family Bible Study</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117;--bg2:#131920;--bg3:#1a2332;--surface:#1e2d42;
+  --surface2:#243347;--border:#2a3f5a;--gold:#c9a84c;--gold-light:#e8c97a;
+  --gold-dim:rgba(201,168,76,0.15);--text:#e8e4d9;--text2:#9aafca;
+  --text3:#5a7a9a;--red:#c0392b;--green:#27ae60;--radius:14px;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.6;overflow:hidden;overscroll-behavior:none}
+#app{height:100%;display:flex;flex-direction:column;padding-top:var(--safe-top)}
+.screen{display:none;flex-direction:column;height:100%;overflow:hidden}
+.screen.active{display:flex}
+
+/* ── WELCOME SCREEN ────────────────────────────── */
+#screen-welcome{overflow-y:auto;-webkit-overflow-scrolling:touch}
+.welcome-hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:52px 28px 48px;text-align:center;background:radial-gradient(ellipse at 50% 0%,var(--bg3) 0%,var(--bg) 65%)}
+.welcome-cross{font-size:52px;margin-bottom:20px}
+.welcome-logo{font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:var(--text);line-height:1;margin-bottom:6px}
+.welcome-logo span{color:var(--gold);font-style:italic}
+.welcome-tagline{font-size:15px;color:var(--text3);letter-spacing:.8px;margin-bottom:36px}
+.welcome-rule{width:36px;height:1px;background:var(--gold);margin:0 auto 36px;opacity:.5}
+.welcome-story{max-width:360px;margin:0 auto;text-align:left;margin-bottom:36px}
+.story-para{font-size:16px;color:var(--text2);line-height:1.8;margin-bottom:16px}
+.story-para strong{color:var(--text);font-weight:500}
+.story-sig{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--gold-light);margin-top:20px}
+.welcome-features{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:360px;margin:0 auto 36px;width:100%}
+.feat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 14px;text-align:center}
+.feat-icon{font-size:26px;margin-bottom:8px}
+.feat-label{font-size:13px;color:var(--text);font-weight:500;margin-bottom:2px}
+.feat-sub{font-size:11px;color:var(--text3)}
+.welcome-actions{max-width:360px;width:100%;margin:0 auto;padding:0 28px}
+.btn-welcome{width:100%;padding:18px;background:var(--gold);color:var(--bg);border:none;border-radius:14px;font-size:17px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.2px;margin-bottom:10px}
+.btn-welcome:active{opacity:.85}
+.btn-welcome-ghost{width:100%;padding:14px;background:transparent;color:var(--text3);border:1px solid var(--border);border-radius:14px;font-size:15px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.welcome-fine-print{padding:20px 28px 40px;text-align:center;max-width:360px;margin:0 auto;font-size:12px;color:var(--text3);line-height:1.7}
+
+/* ── ONBOARDING (AI key setup) ─────────────────── */
+#screen-onboarding{background:var(--bg)}
+.onboard-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:32px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.onboard-step{width:100%;max-width:400px;margin:0 auto}
+.onboard-icon{font-size:48px;text-align:center;margin-bottom:20px}
+.onboard-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:var(--text);text-align:center;margin-bottom:8px;line-height:1.2}
+.onboard-sub{font-size:15px;color:var(--text2);text-align:center;line-height:1.65;margin-bottom:28px}
+.onboard-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:20px}
+.onboard-box-title{font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.onboard-step-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.onboard-step-num{width:24px;height:24px;background:var(--gold-dim);border:1px solid rgba(201,168,76,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--gold);flex-shrink:0;margin-top:1px}
+.onboard-step-text{font-size:14px;color:var(--text2);line-height:1.5;flex:1}
+.onboard-step-text strong{color:var(--text)}
+.onboard-key-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:8px;transition:border-color .2s}
+.onboard-key-input:focus{border-color:var(--gold)}
+.onboard-cost{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:20px;font-size:13px;color:var(--text2);line-height:1.6}
+.onboard-cost strong{color:var(--gold-light)}
+
+/* ── SHARED HEADER / NAV ────────────────────────── */
+.header{padding:16px 20px 12px;border-bottom:1px solid var(--border);background:var(--bg);flex-shrink:0;display:flex;align-items:center;gap:12px}
+.header-back{width:36px;height:36px;border:none;background:none;color:var(--gold);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.header-back:active{background:var(--gold-dim)}
+.header-title{flex:1;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--text)}
+.scroll-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(80px + var(--safe-bottom))}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(64px + var(--safe-bottom));padding-bottom:var(--safe-bottom);background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:center;z-index:100}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 0;cursor:pointer;color:var(--text3);transition:color .2s;border:none;background:none}
+.nav-item.active{color:var(--gold)}
+.nav-icon{font-size:20px;line-height:1}
+.nav-label{font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+
+/* ── HOME ───────────────────────────────────────── */
+.home-hero{padding:28px 20px 20px;background:linear-gradient(180deg,var(--bg3) 0%,var(--bg) 100%);border-bottom:1px solid var(--border)}
+.home-greeting{font-size:13px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.home-title{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:var(--text);line-height:1.2;margin-bottom:20px}
+.home-title span{color:var(--gold);font-style:italic}
+.progress-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:8px}
+.progress-label{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.progress-bar-wrap{background:var(--bg);border-radius:100px;height:6px;overflow:hidden;margin-bottom:8px}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:100px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.progress-stats{display:flex;justify-content:space-between;font-size:12px;color:var(--text2)}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:16px 20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;text-align:center}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--gold);line-height:1;margin-bottom:4px}
+.stat-lbl{font-size:11px;color:var(--text3)}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);padding:16px 20px 8px}
+.daily-verse-card{margin:0 16px 4px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:var(--radius);padding:16px 18px;cursor:pointer}
+.daily-verse-text{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--text);line-height:1.5;margin-bottom:8px}
+.daily-verse-ref{font-size:12px;color:var(--gold)}
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 16px}
+.quick-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:8px;transition:background .15s,border-color .15s}
+.quick-btn:active{background:var(--surface2);border-color:var(--gold)}
+.quick-btn-icon{font-size:22px}
+.quick-btn-label{font-size:14px;font-weight:500;color:var(--text)}
+.quick-btn-sub{font-size:12px;color:var(--text3)}
+.ai-status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;font-size:12px;font-weight:500;margin:0 16px 8px}
+.ai-status-badge.active{background:rgba(39,174,96,.12);border:1px solid rgba(39,174,96,.3);color:#27ae60}
+.ai-status-badge.inactive{background:var(--gold-dim);border:1px solid rgba(201,168,76,.3);color:var(--gold-light)}
+
+/* ── LIBRARY ────────────────────────────────────── */
+.book-grid{padding:12px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.book-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:background .15s}
+.book-card:active{background:var(--surface2)}
+.book-card.completed{border-left:3px solid var(--gold)}
+.book-num{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--text3);width:28px;flex-shrink:0;text-align:right}
+.book-info{flex:1}
+.book-name{font-size:16px;font-weight:500;color:var(--text);margin-bottom:2px}
+.book-meta{font-size:12px;color:var(--text3)}
+.book-prog{font-size:12px;text-align:right;flex-shrink:0}
+.book-check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;flex-shrink:0}
+.book-check.done{background:var(--gold);border-color:var(--gold);color:var(--bg)}
+
+/* ── BOOK DETAIL ─────────────────────────────────── */
+.intro-row{display:flex;gap:8px;margin-bottom:10px;align-items:flex-start}
+.intro-key{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--gold);width:80px;flex-shrink:0;padding-top:1px}
+.intro-val{font-size:14px;color:var(--text2);line-height:1.4}
+.chapter-list{padding:0 16px 16px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.chapter-btn{aspect-ratio:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:var(--text);cursor:pointer;flex-direction:column;gap:3px;transition:all .15s}
+.chapter-btn:active{background:var(--surface2)}
+.chapter-btn.done{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+.ch-time{font-size:9px;color:var(--text3);font-weight:400}
+.chapter-btn.done .ch-time{color:var(--gold);opacity:.7}
+
+/* ── READER ─────────────────────────────────────── */
+.reader-header{padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg);flex-shrink:0;display:flex;align-items:center;gap:10px}
+.reader-title{flex:1;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600}
+.trans-pill{font-size:12px;font-weight:500;color:var(--gold);background:var(--gold-dim);padding:4px 10px;border-radius:100px;cursor:pointer;border:1px solid rgba(201,168,76,.3);white-space:nowrap}
+.reader-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 20px 130px}
+.verse-block{display:flex;gap:10px;margin-bottom:14px;cursor:pointer;border-radius:8px;padding:6px 8px;transition:background .15s}
+.verse-block:active,.verse-block.selected{background:var(--gold-dim)}
+.verse-num{font-size:11px;font-weight:600;color:var(--gold);min-width:20px;padding-top:4px;flex-shrink:0}
+.verse-text{font-family:'Cormorant Garamond',serif;font-size:19px;line-height:1.7;color:var(--text);flex:1}
+.reader-footer{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:12px 16px;padding-bottom:calc(12px + var(--safe-bottom));display:flex;gap:8px;z-index:99}
+
+/* ── LOADING ─────────────────────────────────────── */
+.loading-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px}
+.loading-dots{display:flex;gap:6px}
+.loading-dot{width:8px;height:8px;background:var(--gold);border-radius:50%;animation:bounce 1.2s infinite}
+.loading-dot:nth-child(2){animation-delay:.2s}
+.loading-dot:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-8px);opacity:1}}
+.loading-text{font-size:14px;color:var(--text3)}
+
+/* ── VERSE SHEET ─────────────────────────────────── */
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;display:none;align-items:flex-end}
+.sheet-overlay.open{display:flex}
+.sheet{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;padding:16px;padding-bottom:calc(24px + var(--safe-bottom));border-top:1px solid var(--border)}
+.sheet-handle{width:40px;height:4px;background:var(--border);border-radius:100px;margin:0 auto 16px}
+.sheet-verse-ref{font-size:12px;color:var(--gold);margin-bottom:8px}
+.sheet-verse-text{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--text);line-height:1.55;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.sheet-actions{display:flex;gap:8px;margin-bottom:16px}
+.sheet-btn{flex:1;padding:12px 8px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:'DM Sans',sans-serif;transition:opacity .15s}
+.sheet-btn.primary{background:var(--gold-dim);border-color:rgba(201,168,76,.4);color:var(--gold-light)}
+.sheet-btn:active{opacity:.7}
+
+/* ── AI RESPONSE ─────────────────────────────────── */
+.ai-response{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-top:4px}
+.ai-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ai-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.ai-section-title{font-size:12px;font-weight:500;color:var(--gold-light);text-transform:uppercase;letter-spacing:.6px;margin:12px 0 6px}
+.ai-text{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:6px}
+.cross-ref-chip{display:inline-block;background:var(--gold-dim);border:1px solid rgba(201,168,76,.3);color:var(--gold-light);font-size:12px;padding:3px 9px;border-radius:100px;margin:3px 4px 3px 0}
+
+/* ── MODALS ──────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px 24px;width:100%;max-width:400px;max-height:82vh;overflow-y:auto}
+.modal-icon{font-size:40px;text-align:center;margin-bottom:12px}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;text-align:center;margin-bottom:6px;color:var(--gold-light)}
+.modal-sub{font-size:14px;color:var(--text3);text-align:center;margin-bottom:20px;line-height:1.5}
+.modal-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;resize:none;min-height:90px;margin-bottom:12px;outline:none;transition:border-color .2s}
+.modal-input:focus{border-color:var(--gold)}
+.btn-gold{width:100%;padding:14px;background:var(--gold);color:var(--bg);border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:8px;transition:opacity .2s}
+.btn-gold:active{opacity:.85}
+.btn-ghost{width:100%;padding:14px;background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:12px;font-size:15px;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ── QUIZ ────────────────────────────────────────── */
+.quiz-q{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin:12px 16px}
+.quiz-q-text{font-size:16px;color:var(--text);line-height:1.5;margin-bottom:14px;font-weight:500}
+.quiz-option{width:100%;text-align:left;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--bg3);color:var(--text2);font-size:14px;cursor:pointer;margin-bottom:8px;font-family:'DM Sans',sans-serif;transition:all .15s;line-height:1.4}
+.quiz-option.correct{background:rgba(39,174,96,.18);border-color:var(--green);color:var(--text)}
+.quiz-option.wrong{background:rgba(192,57,43,.18);border-color:var(--red);color:var(--text)}
+.quiz-explain{background:var(--bg3);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--text2);line-height:1.6;margin-top:8px;border-left:3px solid var(--gold);display:none}
+.quiz-explain.show{display:block}
+.quiz-ref{font-size:12px;color:var(--gold);margin-top:6px}
+
+/* ── NOTES ───────────────────────────────────────── */
+.notes-list{padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.note-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:var(--radius);padding:14px 16px}
+.note-ref{font-size:12px;color:var(--gold);margin-bottom:6px}
+.note-text{font-size:15px;color:var(--text2);line-height:1.5}
+.note-date{font-size:11px;color:var(--text3);margin-top:8px}
+
+/* ── ANALYTICS ───────────────────────────────────── */
+.analytics-hero{padding:28px 20px;background:linear-gradient(160deg,var(--bg3),var(--bg));border-bottom:1px solid var(--border);text-align:center}
+.analytics-big{font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;color:var(--gold-light);line-height:1;margin-bottom:6px}
+.analytics-big-label{font-size:13px;color:var(--text3)}
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px}
+.analytics-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.analytics-card-num{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;color:var(--gold);line-height:1;margin-bottom:4px}
+.analytics-card-label{font-size:12px;color:var(--text3)}
+.insight-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:0 16px 8px;cursor:pointer}
+.insight-book{font-size:12px;color:var(--gold);margin-bottom:4px}
+.insight-text{font-size:14px;color:var(--text2);line-height:1.4}
+
+/* ── SETTINGS ────────────────────────────────────── */
+.api-key-section{padding:4px 16px 16px}
+.api-key-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:8px;transition:border-color .2s}
+.api-key-input:focus{border-color:var(--gold)}
+.api-hint{font-size:12px;color:var(--text3);line-height:1.5;margin-top:4px}
+.settings-row{display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);cursor:pointer;gap:14px}
+.settings-icon{font-size:20px;width:28px;text-align:center}
+.settings-label{flex:1;font-size:15px;color:var(--text)}
+.settings-val{font-size:13px;color:var(--text3)}
+
+/* ── ABOUT ───────────────────────────────────────── */
+.about-story-card{margin:16px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:var(--radius);padding:20px}
+
+/* ── ADD TO HOME SCREEN BANNER ───────────────────── */
+#a2hs-banner{
+  position:fixed;bottom:0;left:0;right:0;z-index:500;
+  background:var(--bg2);border-top:2px solid var(--gold);
+  padding:16px 20px;padding-bottom:calc(16px + var(--safe-bottom));
+  display:none;flex-direction:column;gap:12px;
+  box-shadow:0 -12px 40px rgba(0,0,0,.6);
+}
+#a2hs-banner.show{display:flex}
+.a2hs-row{display:flex;align-items:center;gap:14px}
+.a2hs-icon{width:46px;height:46px;background:var(--gold-dim);border:1px solid rgba(201,168,76,.3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.a2hs-text-wrap{flex:1}
+.a2hs-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:2px}
+.a2hs-sub{font-size:12px;color:var(--text3);line-height:1.4}
+#a2hs-ios-steps{display:none;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--text2);line-height:1.7}
+.a2hs-btns{display:flex;gap:8px}
+.a2hs-btn-install{flex:1;padding:12px;background:var(--gold);color:var(--bg);border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.a2hs-btn-later{padding:12px 16px;background:transparent;color:var(--text3);border:1px solid var(--border);border-radius:10px;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ── MISC ────────────────────────────────────────── */
+.divider{height:1px;background:var(--border);margin:4px 20px}
+.pill{display:inline-block;font-size:11px;padding:2px 9px;border-radius:100px;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,168,76,.25)}
+.empty-state{text-align:center;padding:52px 24px;color:var(--text3)}
+.empty-icon{font-size:44px;margin-bottom:14px}
+.empty-text{font-size:15px;line-height:1.6}
+.cache-badge{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.cache-dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:10px 20px;border-radius:100px;font-size:13px;z-index:999;display:none;white-space:nowrap;max-width:85vw;overflow:hidden;text-overflow:ellipsis}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .3s ease forwards}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ═══════════════ WELCOME ═══════════════ -->
+<div id="screen-welcome" class="screen active">
+  <div class="welcome-hero">
+    <div class="welcome-cross">✝️</div>
+    <div class="welcome-logo">The <span>Bridge</span></div>
+    <div class="welcome-tagline">Scripture Interprets Scripture</div>
+    <div class="welcome-rule"></div>
+
+    <div class="welcome-story">
+      <p class="story-para">
+        My grandmother wanted to set up a time once a week to
+        <strong>learn about the Bible together as a family.</strong>
+        So I took it upon myself to set up the study sessions and host them.
+      </p>
+      <p class="story-para">
+        As time went on, I took the notes and feedback I received from my family
+        during those sessions — the questions, the confusion, the moments things
+        finally clicked — and used them to <strong>make the Bible clearer and
+        provide a deeper understanding.</strong>
+      </p>
+      <p class="story-para">
+        Over time, this is what I created to help us learn the Bible together.
+        And now I want to <strong>share it with the world</strong> — so others
+        can start learning about Jesus with their families too, and
+        spread the Gospel with confidence.
+      </p>
+      <div class="story-sig">— Zephaniah</div>
+    </div>
+
+    <div class="welcome-features">
+      <div class="feat-card">
+        <div class="feat-icon">📖</div>
+        <div class="feat-label">Full Bible</div>
+        <div class="feat-sub">KJV · NIV · NLT · NASB</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🧠</div>
+        <div class="feat-label">AI Study</div>
+        <div class="feat-sub">Deep context &amp; insight</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">👨‍👩‍👧</div>
+        <div class="feat-label">Family First</div>
+        <div class="feat-sub">Built for groups</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔒</div>
+        <div class="feat-label">Private</div>
+        <div class="feat-sub">Your data stays yours</div>
+      </div>
+    </div>
+
+    <div class="welcome-actions">
+      <button class="btn-welcome" onclick="showScreen('onboarding')">Get Started →</button>
+      <button class="btn-welcome-ghost" onclick="skipOnboarding()">I already have an AI key</button>
+    </div>
+
+    <div class="welcome-fine-print">
+      100% free · No account required · No ads · No tracking<br>
+      Your progress saves automatically on your device
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ONBOARDING ═══════════════ -->
+<div id="screen-onboarding" class="screen">
+  <div class="onboard-wrap">
+    <div class="onboard-step">
+      <div class="onboard-icon">🤖</div>
+      <div class="onboard-title">Set Up Your AI Study Assistant</div>
+      <div class="onboard-sub">
+        The Bridge uses AI to give you deep verse explanations, historical context,
+        word studies, and chapter overviews — all grounded in Scripture.
+        To unlock these features, you need a free Anthropic API key.
+      </div>
+
+      <div class="onboard-cost">
+        <strong>Cost: ~$1–2 per month</strong> for a typical family study session.<br>
+        A $5 credit lasts most families several months.
+        You only pay for what you use — there is no subscription.
+      </div>
+
+      <div class="onboard-box">
+        <div class="onboard-box-title">How to get your free key</div>
+        <div class="onboard-step-row">
+          <div class="onboard-step-num">1</div>
+          <div class="onboard-step-text">Go to <strong>console.anthropic.com</strong> and create a free account</div>
+        </div>
+        <div class="onboard-step-row">
+          <div class="onboard-step-num">2</div>
+          <div class="onboard-step-text">Click <strong>API Keys</strong> in the left sidebar → <strong>Create Key</strong></div>
+        </div>
+        <div class="onboard-step-row">
+          <div class="onboard-step-num">3</div>
+          <div class="onboard-step-text">Go to <strong>Billing</strong> and add <strong>$5</strong> in credits</div>
+        </div>
+        <div class="onboard-step-row">
+          <div class="onboard-step-num">4</div>
+          <div class="onboard-step-text">Paste your key below and tap <strong>Save &amp; Start Studying</strong></div>
+        </div>
+      </div>
+
+      <input type="password" class="onboard-key-input" id="onboard-key-inp" placeholder="sk-ant-…">
+      <div class="api-hint" style="margin-bottom:20px">Your key is stored only on this device. It is never sent anywhere except directly to Anthropic to power your study features.</div>
+
+      <button class="btn-gold" onclick="saveOnboardKey()">Save &amp; Start Studying →</button>
+      <button class="btn-ghost" style="margin-top:8px" onclick="skipOnboarding()">Skip for now — I'll add it later</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div id="screen-home" class="screen">
+  <div class="scroll-body">
+    <div class="home-hero">
+      <div class="home-greeting">Family Bible Study</div>
+      <div class="home-title">The <span>Bridge</span></div>
+      <div class="progress-card">
+        <div class="progress-label">New Testament Progress</div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="nt-bar" style="width:0%"></div></div>
+        <div class="progress-stats"><span id="nt-done-lbl">0 chapters</span><span id="nt-pct-lbl">0%</span></div>
+      </div>
+    </div>
+
+    <!-- AI status indicator -->
+    <div id="ai-status-wrap" style="padding:10px 16px 0"></div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="s-streak">0</div><div class="stat-lbl">🔥 Streak</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-hours">0</div><div class="stat-lbl">Hours Read</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-notes">0</div><div class="stat-lbl">Insights</div></div>
+    </div>
+
+    <div class="section-title">Daily Verse</div>
+    <div class="daily-verse-card" onclick="showDailyVerse()">
+      <div class="daily-verse-text" id="dv-text"></div>
+      <div class="daily-verse-ref" id="dv-ref"></div>
+    </div>
+
+    <div class="section-title">Quick Actions</div>
+    <div class="quick-actions">
+      <div class="quick-btn" onclick="continueReading()">
+        <div class="quick-btn-icon">📖</div>
+        <div class="quick-btn-label">Continue Reading</div>
+        <div class="quick-btn-sub" id="continue-lbl">Start with Matthew 1</div>
+      </div>
+      <div class="quick-btn" onclick="showScreen('library')">
+        <div class="quick-btn-icon">📚</div>
+        <div class="quick-btn-label">Browse Books</div>
+        <div class="quick-btn-sub">All 27 NT books</div>
+      </div>
+      <div class="quick-btn" onclick="showScreen('notes')">
+        <div class="quick-btn-icon">✏️</div>
+        <div class="quick-btn-label">My Notes</div>
+        <div class="quick-btn-sub" id="notes-lbl">0 insights</div>
+      </div>
+      <div class="quick-btn" onclick="showScreen('about')">
+        <div class="quick-btn-icon">✝️</div>
+        <div class="quick-btn-label">About</div>
+        <div class="quick-btn-sub">Our story</div>
+      </div>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="showScreen('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></button>
+    <button class="nav-item" onclick="showScreen('library')"><div class="nav-icon">📚</div><div class="nav-label">Library</div></button>
+    <button class="nav-item" onclick="showScreen('notes')"><div class="nav-icon">✏️</div><div class="nav-label">Notes</div></button>
+    <button class="nav-item" onclick="showScreen('analytics')"><div class="nav-icon">📊</div><div class="nav-label">Progress</div></button>
+    <button class="nav-item" onclick="showScreen('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></button>
+  </nav>
+</div>
+
+<!-- ═══════════════ LIBRARY ═══════════════ -->
+<div id="screen-library" class="screen">
+  <div class="header"><div class="header-title">Library</div><div style="font-size:12px;color:var(--text3)">New Testament</div></div>
+  <div class="scroll-body"><div id="book-grid" class="book-grid"></div></div>
+  <nav class="bottom-nav">
+    <button class="nav-item" onclick="showScreen('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></button>
+    <button class="nav-item active" onclick="showScreen('library')"><div class="nav-icon">📚</div><div class="nav-label">Library</div></button>
+    <button class="nav-item" onclick="showScreen('notes')"><div class="nav-icon">✏️</div><div class="nav-label">Notes</div></button>
+    <button class="nav-item" onclick="showScreen('analytics')"><div class="nav-icon">📊</div><div class="nav-label">Progress</div></button>
+    <button class="nav-item" onclick="showScreen('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></button>
+  </nav>
+</div>
+
+<!-- ═══════════════ BOOK DETAIL ═══════════════ -->
+<div id="screen-book" class="screen">
+  <div class="header">
+    <button class="header-back" onclick="showScreen('library')">←</button>
+    <div class="header-title" id="book-hdr">Book</div>
+  </div>
+  <div class="scroll-body" id="book-body"></div>
+</div>
+
+<!-- ═══════════════ READER ═══════════════ -->
+<div id="screen-reader" class="screen">
+  <div class="reader-header">
+    <button class="header-back" onclick="backFromReader()">←</button>
+    <div class="reader-title" id="reader-hdr">Matthew 1</div>
+    <div class="trans-pill" id="trans-pill" onclick="openTransPicker()">KJV</div>
+  </div>
+  <div class="reader-body" id="reader-body"></div>
+  <div class="reader-footer">
+    <button class="btn-ghost" style="flex:1" onclick="openComplete()">✓ Mark Complete</button>
+    <button class="btn-gold" style="flex:1;margin:0;width:auto;padding:14px" onclick="openQuiz()">Take Quiz →</button>
+  </div>
+</div>
+
+<!-- ═══════════════ CHAPTER STUDY ═══════════════ -->
+<div id="screen-study" class="screen">
+  <div class="reader-header">
+    <button class="header-back" onclick="showScreen('reader')">←</button>
+    <div class="reader-title" id="study-hdr">Chapter Study</div>
+    <div style="font-size:11px;color:var(--gold);background:var(--gold-dim);padding:4px 10px;border-radius:100px;border:1px solid rgba(201,168,76,.3)">AI</div>
+  </div>
+  <div style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+    <div id="study-tabs" style="display:flex;border-bottom:1px solid var(--border);padding:0 16px;gap:4px;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch"></div>
+    <div id="study-content" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 20px 80px"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ QUIZ ═══════════════ -->
+<div id="screen-quiz" class="screen">
+  <div class="header">
+    <button class="header-back" onclick="showScreen('reader')">←</button>
+    <div class="header-title" id="quiz-hdr">Chapter Quiz</div>
+  </div>
+  <div class="scroll-body" id="quiz-body"></div>
+</div>
+
+<!-- ═══════════════ NOTES ═══════════════ -->
+<div id="screen-notes" class="screen">
+  <div class="header"><div class="header-title">My Notes</div></div>
+  <div class="scroll-body"><div id="notes-list" class="notes-list"></div></div>
+  <nav class="bottom-nav">
+    <button class="nav-item" onclick="showScreen('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></button>
+    <button class="nav-item" onclick="showScreen('library')"><div class="nav-icon">📚</div><div class="nav-label">Library</div></button>
+    <button class="nav-item active" onclick="showScreen('notes')"><div class="nav-icon">✏️</div><div class="nav-label">Notes</div></button>
+    <button class="nav-item" onclick="showScreen('analytics')"><div class="nav-icon">📊</div><div class="nav-label">Progress</div></button>
+    <button class="nav-item" onclick="showScreen('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></button>
+  </nav>
+</div>
+
+<!-- ═══════════════ ANALYTICS ═══════════════ -->
+<div id="screen-analytics" class="screen">
+  <div class="header"><div class="header-title">My Progress</div></div>
+  <div class="scroll-body" id="analytics-body"></div>
+  <nav class="bottom-nav">
+    <button class="nav-item" onclick="showScreen('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></button>
+    <button class="nav-item" onclick="showScreen('library')"><div class="nav-icon">📚</div><div class="nav-label">Library</div></button>
+    <button class="nav-item" onclick="showScreen('notes')"><div class="nav-icon">✏️</div><div class="nav-label">Notes</div></button>
+    <button class="nav-item active" onclick="showScreen('analytics')"><div class="nav-icon">📊</div><div class="nav-label">Progress</div></button>
+    <button class="nav-item" onclick="showScreen('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></button>
+  </nav>
+</div>
+
+<!-- ═══════════════ SETTINGS ═══════════════ -->
+<div id="screen-settings" class="screen">
+  <div class="header"><div class="header-title">Settings</div></div>
+  <div class="scroll-body">
+    <div class="section-title">AI Study Assistant</div>
+    <div class="api-key-section">
+      <div style="font-size:14px;color:var(--text2);margin-bottom:10px;line-height:1.6">
+        Powers verse deep dives, chapter study mode, and AI-generated quizzes.
+        Get a free key at <strong style="color:var(--gold)">console.anthropic.com</strong>.
+        Typical cost: <strong style="color:var(--gold-light)">~$1–2/month</strong> for weekly family study.
+      </div>
+      <input type="password" class="api-key-input" id="ai-key-inp" placeholder="sk-ant-…">
+      <button class="btn-gold" onclick="saveAIKey()">Save AI Key</button>
+      <div class="api-hint">Your key is stored only on this device and sent only to Anthropic. It is never stored on any server.</div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-title">Bible Translation</div>
+    <div style="padding:0 16px 16px">
+      <div style="font-size:14px;color:var(--text2);margin-bottom:12px">Tap a translation while reading to switch. Chapters cache on your device after first load for instant offline access.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px" id="trans-settings-list"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-title">Cache</div>
+    <div class="settings-row" onclick="showCacheStats()">
+      <div class="settings-icon">💾</div>
+      <div class="settings-label">Cached Chapters</div>
+      <div class="settings-val" id="cache-count">—</div>
+    </div>
+    <div class="settings-row" onclick="clearCache()">
+      <div class="settings-icon">🗑️</div>
+      <div class="settings-label">Clear Chapter Cache</div>
+      <div class="settings-val">›</div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-title">Data</div>
+    <div class="settings-row" onclick="exportData()">
+      <div class="settings-icon">📤</div>
+      <div class="settings-label">Export My Progress &amp; Notes</div>
+      <div class="settings-val">›</div>
+    </div>
+    <div class="settings-row" onclick="confirmReset()">
+      <div class="settings-icon">⚠️</div>
+      <div class="settings-label" style="color:var(--red)">Reset All Progress</div>
+      <div class="settings-val">›</div>
+    </div>
+    <div style="padding:20px;font-size:12px;color:var(--text3);text-align:center;line-height:1.7">
+      The Bridge · Scripture Interprets Scripture<br>
+      Built by Zephaniah · Shared freely for the Kingdom
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-item" onclick="showScreen('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></button>
+    <button class="nav-item" onclick="showScreen('library')"><div class="nav-icon">📚</div><div class="nav-label">Library</div></button>
+    <button class="nav-item" onclick="showScreen('notes')"><div class="nav-icon">✏️</div><div class="nav-label">Notes</div></button>
+    <button class="nav-item" onclick="showScreen('analytics')"><div class="nav-icon">📊</div><div class="nav-label">Progress</div></button>
+    <button class="nav-item active" onclick="showScreen('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></button>
+  </nav>
+</div>
+
+<!-- ═══════════════ ABOUT ═══════════════ -->
+<div id="screen-about" class="screen">
+  <div class="header">
+    <button class="header-back" onclick="showScreen('home')">←</button>
+    <div class="header-title">About The Bridge</div>
+  </div>
+  <div class="scroll-body">
+    <div style="padding:24px 20px">
+      <div style="text-align:center;margin-bottom:28px">
+        <div style="font-size:52px;margin-bottom:14px">✝️</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:var(--text)">The <span style="color:var(--gold);font-style:italic">Bridge</span></div>
+        <div style="font-size:13px;color:var(--text3);margin-top:6px;letter-spacing:.5px">Scripture Interprets Scripture</div>
+      </div>
+
+      <div class="about-story-card">
+        <div style="font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px">Our Story</div>
+        <p style="font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:14px">My grandmother wanted to set up a time once a week to <strong style="color:var(--text)">learn about the Bible together as a family.</strong> So I took it upon myself to set up the study sessions and host them.</p>
+        <p style="font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:14px">As time went on, I took the notes and feedback I received from my family during those sessions — the questions, the confusion, the moments things finally clicked — and used them to <strong style="color:var(--text)">make the Bible clearer and provide a deeper understanding.</strong></p>
+        <p style="font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:16px">Over time, this is what I created to help us learn the Bible together. And now I want to <strong style="color:var(--text)">share it with the world</strong> — so others can start learning about Jesus with their families too, and spread the Gospel with confidence.</p>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--gold-light)">— Zephaniah</div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-top:12px;margin-bottom:12px">
+        <div style="font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">Core Principle</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--text);margin-bottom:10px">"Scripture Interprets Scripture"</div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.65">Every explanation in this app is grounded in other Bible verses — not human opinion or modern reinterpretation. We let God's Word explain itself. The AI is instructed to follow this principle on every response.</div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px">
+        <div style="font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">Privacy Promise</div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.65">Your data never leaves your device. No accounts. No tracking. No ads. No servers storing your information. Your progress, notes, and insights live only on your phone. Your AI key is stored only on your device and sent only to Anthropic.</div>
+      </div>
+
+      <div style="text-align:center;padding:20px 0 8px">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--gold-light);margin-bottom:6px">"Thy word is a lamp unto my feet,<br>and a light unto my path."</div>
+        <div style="font-size:12px;color:var(--text3)">Psalm 119:105 (KJV)</div>
+      </div>
+      <div style="text-align:center;padding-bottom:8px;font-size:13px;color:var(--text3)">
+        The Bridge is free forever.<br>Share it with your family and friends.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ VERSE SHEET ═══════════════ -->
+<div class="sheet-overlay" id="verse-sheet" onclick="closeVerseSheet(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-verse-ref" id="sv-ref"></div>
+    <div class="sheet-verse-text" id="sv-text"></div>
+    <div class="sheet-actions">
+      <button class="sheet-btn primary" onclick="askAI()">🤖 Ask AI</button>
+      <button class="sheet-btn" onclick="addNote()">✏️ Add Note</button>
+      <button class="sheet-btn" onclick="copyVerse()">📋 Copy</button>
+    </div>
+    <div id="ai-area"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ TRANSLATION PICKER ═══════════════ -->
+<div class="sheet-overlay" id="trans-sheet" onclick="closeTransSheet(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:16px">Choose Translation</div>
+    <div id="trans-picker-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div style="font-size:12px;color:var(--text3);margin-top:14px;line-height:1.5">Chapters load from the API and cache on your device. Switch translations freely — cached chapters load instantly without internet.</div>
+  </div>
+</div>
+
+<!-- ═══════════════ COMPLETE MODAL ═══════════════ -->
+<div class="modal-overlay" id="complete-modal">
+  <div class="modal fade-up">
+    <div class="modal-icon">✅</div>
+    <div class="modal-title" id="cm-title">Chapter Complete!</div>
+    <div class="modal-sub" id="cm-sub">What did God show you in this chapter?</div>
+    <textarea class="modal-input" id="cm-note" placeholder="Write your insight or takeaway…"></textarea>
+    <button class="btn-gold" onclick="saveComplete()">Save &amp; Continue</button>
+    <button class="btn-ghost" onclick="closeComplete()">Skip for now</button>
+  </div>
+</div>
+
+<!-- ═══════════════ ADD TO HOME SCREEN ═══════════════ -->
+<div id="a2hs-banner">
+  <div class="a2hs-row">
+    <div class="a2hs-icon">✝️</div>
+    <div class="a2hs-text-wrap">
+      <div class="a2hs-title">Add to Home Screen</div>
+      <div class="a2hs-sub">Install The Bridge for the full app experience — works offline too</div>
+    </div>
+  </div>
+  <div id="a2hs-ios-steps">
+    Tap the <strong style="color:var(--gold)">Share button ⬆️</strong> at the bottom of Safari, then tap <strong style="color:var(--gold)">"Add to Home Screen"</strong> and tap <strong style="color:var(--gold)">Add</strong>.
+  </div>
+  <div class="a2hs-btns">
+    <button class="a2hs-btn-install" id="a2hs-install-btn" onclick="installA2HS()">Add to Home Screen</button>
+    <button class="a2hs-btn-later" onclick="dismissA2HS()">Later</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
